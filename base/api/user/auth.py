@@ -10,6 +10,9 @@ from base.api.user.utils import send_reset_email
 from werkzeug.utils import secure_filename
 import secrets
 
+
+
+
 UPLOAD_FOLDER = 'base/static/profile_pic/'
 
 
@@ -33,12 +36,15 @@ def register():
         image_name = 'default.png'
 
         user=validate(email)
-
+        user_phone = User.query.filter_by(phone_no=phone_no).first()
         if fullname==None or phone_no==None or password==None or email==None or country_code==None or image_name==None :
             return jsonify({'status': 0, 'messege': 'Every field must have values'})
 
         elif user:
             return jsonify({'status': 0, 'messege': 'User Already Exits'})
+        
+        elif  user_phone:
+            return jsonify(   {'status': 0, 'message': 'mobile number is already taken'})
 
         elif not user:
             user_data = User(fullname=fullname,country_code=country_code, email=email, device_id=device_id, device_type=device_type, phone_no=phone_no, password=hash_password,image_name=image_name, created_at=datetime.utcnow())
@@ -49,6 +55,24 @@ def register():
             return jsonify({'status': 1, 'message': 'success', 'data': user_data.as_dict(token)})
 
 
+# otp_store ={}
+
+
+# @user_auth.route('/verify_otp', methods=['GET'])
+# def verify_otp():
+#     user_phone = request.args.get('phone')
+#     user_otp = request.args.get('otp')
+
+#     # Check if the OTP entered by the user matches the one stored in the dictionary
+#     if user_phone in otp_store and otp_store[user_phone] == user_otp:
+#         return "OTP verified successfully!"
+#     else:
+#         return "Invalid OTP!"
+
+
+
+
+
 @user_auth.route('/social_register', methods=['POST'])
 def social_register():
     if request.method == 'POST':
@@ -57,27 +81,38 @@ def social_register():
         social_type = request.form.get('social_type')
         device_id = request.form.get('device_id')
         device_type = request.form.get('device_type')
+        email = request.form.get('email')
+        fullname = request.form.get('fullname')
+        profile_pic = request.form.get('profile_pic')
+
+        print(profile_pic, fullname, email)
         
+
+
         user = User.query.filter_by(social_id=social_id).first()
 
         if user:
+            
             token = jwt.encode({'id': user.id, 'exp': datetime.utcnow() + timedelta(days = 365)}, os.getenv('SECRET_KEY'))
             return jsonify(
-                {'status': 1, 'message': 'login successfully', 'data': user.social_dict(token) })
+                {'status': 1, 'message': 'login successfully', 'data': user.as_dict(token) })
 
         if not user:
 
             user_data = User(social_id=social_id,
+                                email= email,
+                                fullname=fullname,
+                                image_name=profile_pic,
                                 social_type=social_type,
-                                device_id = device_id,
-                                device_type = device_type,
+                                device_id=device_id,
+                                device_type=device_type,
                                 created_at=datetime.utcnow())
 
             insert_data(user_data)
 
             token = jwt.encode({'id': user_data.id, 'exp': datetime.utcnow() + timedelta(days = 365)}, os.getenv('SECRET_KEY'))
 
-            return jsonify({'status': 1, 'message':'Register Successful', 'data': user_data.social_dict(token) })
+        return jsonify({'status': 1, 'message':'Register Successful','data': user_data.as_dict(token) })
           
 
 
@@ -165,7 +200,7 @@ def user_reset_token(token):
 @user_auth.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     user = User.verify_token(token)
-    
+
     if user is None:
         return 'Invalid or Expired Token'
 
@@ -200,6 +235,9 @@ def user_update(active_user):
         elif  user and user.email!=active_user.email:
             return jsonify(   {'status': 0, 'message': 'email is already taken'})
 
+        elif  user and user.phone!=active_user.phone:
+            return jsonify(   {'status': 0, 'message': 'mobile number is already taken'})
+
         elif active_user and active_user.is_block==0:
                 if request.files :
                     form_picture = request.files.get('image')
@@ -222,4 +260,3 @@ def user_update(active_user):
                 db.session.commit()
 
                 return jsonify({'status': 1, 'message': 'Sucessfully Updated Profile', 'data': active_user.user_data()})
-

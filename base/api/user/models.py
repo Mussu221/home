@@ -5,7 +5,7 @@ from base.database.db import db
 from werkzeug.security import  check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import datetime
-
+import enum 
 
 class User(db.Model):
     id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
@@ -20,7 +20,7 @@ class User(db.Model):
     device_type = db.Column('device_type', db.String(50))
     social_id = db.Column('social_id', db.String(200))
     social_type = db.Column('social_type', db.String(50))
-    created_at = db.Column(db.Date)
+    created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow())
     
 
@@ -107,10 +107,13 @@ def token_required(f):
     return decorator
 
 
+
 class Property(db.Model):
     id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(100))
     address = db.Column(db.String(200))
+    latitude = db.Column(db.String(200))
+    longitude = db.Column(db.String(200))
     city = db.Column(db.String(200))
     state = db.Column(db.String(200))
     zipcode = db.Column(db.String(10))
@@ -121,18 +124,29 @@ class Property(db.Model):
     about_property = db.Column(db.Text)
     amenities = db.Column(db.String(200))
     house_rules = db.Column(db.String(200))
-    average_rating = db.Column(db.String(10))
     price_per_night = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE', onupdate = 'CASCADE'))
-    created_at = db.Column(db.Date)
+    created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow())
+    ratings = db.relationship('Review', backref='ratings', lazy=True)
 
 
     def as_dict(self):
-            return {
+
+        reviews = Review.query.filter_by(property_id=self.id).all()
+        sum = 0
+        average = 0
+        for i in reviews :
+            sum += i.rating
+        if sum != 0 :
+            average = round((sum/len(reviews)),2)
+            
+        return{
                     'id' : self.id,
                     'title' : self.title,
-                    'adress': self.address,
+                    'latitude': self.latitude,
+                    'longitude': self.longitude,
+                    'address': self.address,
                     'city':self.city,
                     'state':self.state,
                     'zipcode':self.zipcode,
@@ -140,8 +154,9 @@ class Property(db.Model):
                     'beds':self.beds,
                     'bedrooms':self.bedrooms,
                     'about_property':self.about_property,
-                    'amenities':self.amenities,
-                    'house_rules':self.house_rules,
+                    'average_ratings':  average,
+                    'amenities':list(eval(self.amenities)),
+                    'house_rules':list(eval(self.house_rules)),
                     'price_per_night':self.price_per_night,
             }
 
@@ -152,13 +167,13 @@ class Property_image(db.Model):
     id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
     picture_name = db.Column(db.String(200))
     property_id = db.Column(db.Integer, db.ForeignKey('property.id', ondelete='CASCADE', onupdate = 'CASCADE'))
-    created_at = db.Column(db.Date)
+    created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow())
-
     def as_dict(self):
+        
         return{
             "id":self.id,
-            "picture_name":url_for('static',filename="property_images/"+self.picture_name),
+            "picture_name":self.picture_name,
             "property_id":self.property_id
         }
 
@@ -169,7 +184,75 @@ class Review(db.Model):
     review = db.Column(db.Text)
     property_id = db.Column(db.Integer, db.ForeignKey('property.id', ondelete='CASCADE', onupdate = 'CASCADE'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE', onupdate = 'CASCADE'))
-    created_at = db.Column(db.Date)
+    created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow())
 
+    def as_dict(self):
+        user = User.query.filter_by(id=self.user_id).first()
+        return{
+            "id":self.id,
+            "rating":self.rating,
+            "review":self.review,
+            "property_id" : self.property_id,
+            "create_date": self.created_at.strftime('%y-%m-%d'),
+            "fullname": user.fullname
+        }
 
+
+class Wishlist(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    wishlist = db .Column(db.Boolean)
+    property_id = db.Column(db.Integer, db.ForeignKey('property.id', ondelete='CASCADE', onupdate = 'CASCADE'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE', onupdate = 'CASCADE'))
+    created_at = db.Column(db.DateTime)
+    updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow())
+
+    def as_dict(self):
+
+        return{
+            "id":self.id,
+            "wishlist":self.wishlist,
+            "user_id":self.user_id,
+            "property_id" : self.property_id,
+        }
+
+class Status(str,enum.Enum):
+    pending       = 0  #pending payment 
+    upcoming      = 1
+    active        = 2
+    completed     = 3
+
+
+class Booking(db.Model):
+
+    
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    start_date = db.Column(db.DateTime)
+    guests = db.Column(db.String(100))
+    end_date = db.Column(db.DateTime)
+    cleaning_fees = db.Column(db.Integer)
+    discount = db.Column(db.Integer)
+    service_fees = db.Column(db.Integer)
+    total_charge = db.Column(db.Integer)
+    description = db.Column(db.Text)
+    status = db.Column(db.Enum(Status))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE', onupdate = 'CASCADE'))
+    property_id = db.Column(db.Integer, db.ForeignKey('property.id', ondelete='CASCADE', onupdate = 'CASCADE'))
+
+    def as_dict(self):
+
+
+        return{
+            "id":self.id,
+            "start_date":self.start_date,
+            "end_date":self.end_date,
+            "guest":self.guests,
+            "cleaning_fees":self.cleaning_fees,
+            "discount":self.discount,
+            "service_fees":self.service_fees,
+            "status":self.status,
+            "total_charge":self.total_charge,
+            "description":self.description,
+            "user_id":self.user_id,
+            "property_id" : self.property_id,
+        }

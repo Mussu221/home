@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg"
+    data-sidebar-image="none" data-preloader="disable">
+
+<head>
+    <meta charset="utf-8" />
+    {% if title %}
+    <title>Face Club - {{title}}</title>
+    {% else %}
+    <title>Face Club</title>
+    {% endif %}
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+    <meta content="Themesbrand" name="author" />
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="{{url_for('static',filename='assets//images//logo//logo3.png')}}" />
+
+    <!-- jsvectormap css -->
+    <link href="{{url_for('static',filename='assets/libs/jsvectormap/css/jsvectormap.min.css')}}" rel="stylesheet"
+        type="text/css" />
+
+    <!--Swiper slider css-->
+    <link href="{{url_for('static',filename='assets/libs/swiper/swiper-bundle.min.css')}}" rel="stylesheet"
+        type="text/css" />
+
+
+    <!-- Layout config Js -->
+    <script src="{{url_for('static',filename='assets/js/layout.js')}}"></script>
+    <!-- Bootstrap Css -->
+    <link href="{{url_for('static',filename='assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" />
+    <!-- Icons Css -->
+    <link href="{{url_for('static',filename='assets/css/icons.min.css')}}" rel="stylesheet" type="text/css" />
+    <!-- App Css-->
+    <link href="{{url_for('static',filename='assets/css/app.min.css')}}" rel="stylesheet" type="text/css" />
+    <!-- custom Css-->
+    <link href="{{url_for('static',filename='assets/css/custom.min.css')}}" rel="stylesheet" type="text/css" />
+    
+           <style>
+
+@keyframes fade-out {
+  from {
+    visibility: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+  100% {position: absolute; top: -9999px; left: -9999px;} 
+  
+
+}
+
+.fade-out {
+  animation-name: fade-out; 
+}
+
+.animated {
+  animation-duration: 5s;
+  animation-fill-mode: both;
+}
+        </style>
+</head>
+
+<body>
+    <!-- Begin page -->
+    <div id="layout-wrapper">
+        <header id="page-topbar">
+            <div class="layout-width">
+                <div class="navbar-header">
+                    <div class="d-flex">
+                        <!-- LOGO -->
+                        <div class="navbar-brand-box horizontal-logo">
+                            <a href="{{url_for('admin_view.home')}}" class="logo logo-dark">
+                                <span class="logo-sm">
+                                    <img src="{{url_for('static',filename='assets/images/logo/logo1.png')}}" alt=""
+                                        height="22" />
+                                </span>
+                                <span class="logo-lg">
+                                    <img src="{{url_for('static',filename='assets/images/logo/logo1.png')}}" alt=""
+                                        height="17" />
+                                </span></a>
+
+                            <a href="index.html" class="logo logo-light">
+                                <span class="logo-sm">
+                                    <img src="{{url_for('static',filename='assets/images/logo/logo1.png')}}" alt=""
+                                        height="22" />
+                                </span>
+                                <span class="logo-lg">
+                                    <img src="{{url_for('static',filename='assets/images/logo/logo1.png')}}" alt=""
+                                        height="17" />
+                                </span>
+                            </a>
+                        </div>
+                        <button type="button" class="btn btn-sm px-3 fs-16 header-item
+                                vertical-menu-btn topnav-hamburger" id="topnav-hamburger-icon">
+                            <span class="hamburger-icon">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </span>
+                        </button>
+
+                    </div>
+                        <div class="dropdown ms-sm-3 header-item
+                                topbar-user">
+                            <button type="button" class="btn" id="page-header-user-dropdown" data-bs-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
+                                <span class="d-flex align-items-center">
+                                    <img class="rounded-circle
+                                            header-profile-user" src="{{url_for('static',
+                                            filename='admin_profile/'
+                                            + current_user.image_file)}}" alt="Header Avatar" />
+                                    <span class="text-start ms-xl-2">
+                                        <span class="d-none
+                                                d-xl-inline-block ms-1 fw-medium
+                                                user-name-text">{{current_user.fname}}
+                                            {{current_user.lname}}</span>
+                                    </span>
+                                </span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <!-- item-->
+                                <h6 class="dropdown-header">Welcome {{current_user.fname}}
+                                    {{current_user.lname}}</h6>
+                                <a class="dropdown-item" href="{{url_for('admin_auth.user_profile')}}"><i class="mdi mdi-account-circle
+                                            text-muted fs-16 align-middle me-1"></i>
+                                    <span class="align-middle">Profile</span></a>
+                                <a class="dropdown-item" href="{{url_for('admin_auth.logout')}}">
+                                    <i class="mdi mdi-logout text-muted
+                                            fs-16 align-middle me-1"></i>
+                                    <span class="align-middle">Logout</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- ========== App Menu ========== -->
+        <div class="app-menu navbar-menu">
+            <!-- LOGO -->
+            <div class="navbar-brand-box">
+                <!-- Dark Logo-->
+                <a href="{{url_for('admin_view.home')}}" class="logo
+                        logo-dark">
+                    <span class="logo-sm">
+                        <img src="{{url_for('static',filename='assets//images//logo//logo3.png')}}" alt="" height="70" />
+                    </span>
+                    <span class="logo-lg">
+                        <img src="{{url_for('static',filename='assets//images//logo//logo3.png')}}" alt="" height="70" />
+                    </span>
+                </a>
+                <!-- Light Logo-->
+                <a href="{{url_for('admin_view.home')}}" class="logo
+                        logo-light">
+                    <span class="logo-sm">
+                        <img src="{{url_for('static',filename='assets//images//logo//logo3.png')}}" alt="" height="70" />
+                    </span>
+                    <span class="logo-lg">
+                        <img src="{{url_for('static',filename='assets//images//logo//logo3.png')}}" alt="" height="70" />
+                        
+                    </span>
+                </a>
+                <button type="button" class="btn btn-sm p-0 fs-20
+                        header-item float-end btn-vertical-sm-hover" id="vertical-hover">
+                    <i class="ri-record-circle-line"></i>
+                </button>
+            </div>
+
+            <div id="scrollbar">
+                <div class="container-fluid">
+
+                    <div id="two-column-menu"></div>
+                    <ul class="navbar-nav" id="navbar-nav">
+                        <li class="menu-title"><span data-key="t-menu">Menu</span></li>
+
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="{{url_for('admin_view.home')}}" aria-expanded="false">
+                                <i class="ri-dashboard-2-line"></i>
+                                <span data-key="t-dashboards">Dashboards</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="{{url_for('admin_view.total_users')}}" role="button"
+                                aria-expanded="false">
+                                <i class="bx bx-user-circle"></i>
+                                <span data-key="t-category">Total Users</span>
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="#sidebarAuth" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarAuth">
+                                <i class="ri-file-list-3-line"></i> <span data-key="t-CMS">CMS</span>
+                            </a>
+                            <div class="menu-dropdown collapse" id="sidebarAuth" style="">
+                                <ul class="nav nav-sm flex-column">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" href="{{url_for('admin_auth.terms')}}" role="button"
+                                            aria-expanded="false">
+                                            <i class="las la-edit"></i>
+                                            <span data-key="t-terms" style="display:flex">Terms & Conditions</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link active" href="{{url_for('admin_auth.privacy_policy')}}" role="button"
+                                            aria-expanded="false">
+                                            <i class="las la-edit"></i>
+                                            <span data-key="t-privacy" style="display:flex">Privacy Policy</span>
+                                        </a>
+                                    </li>
+                                    
+                                </ul>
+                            </div>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="page-content">
+                <div class="container-fluid fade-out animated">
+                    <div class="">
+                        {% with messages = get_flashed_messages(with_categories=True) %}
+                        {% if messages %}
+                        {% for category, message in messages %}
+                        <div id=flashwrapper class="alert alert-success alert-dismissible fade show mb-5" role="alert">
+                            {{
+                            message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
+                                onClick="close('flashwrapper')"></button>
+
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+                {% block content %} {% endblock %}
+
+                <!-- JAVASCRIPT -->
+                <script
+                    src="{{url_for('static',filename='assets/libs/bootstrap/js/bootstrap.bundle.min.js')}}"></script> 
+                <script src="{{url_for('static',filename='assets//libs//choices//choices.min.js')}}"></script>
+                <script src="{{url_for('static',filename='assets//libs//flatpicker//flatpicker//flatpickr.min.js')}}"></script>
+                <script src="{{url_for('static',filename='assets/libs/simplebar/simplebar.min.js')}}"></script>
+                <script src="{{url_for('static',filename='assets/libs/node-waves/waves.min.js')}}"></script>
+                <script src="{{url_for('static',filename='assets/libs/feather-icons/feather.min.js')}}"></script>
+                <script src="{{url_for('static',filename='assets/js/pages/plugins/lord-icon-2.1.0.js')}}"></script>
+                <script src="{{url_for('static',filename='assets/js/plugins.js')}}"></script>
+                <!-- apexcharts -->
+                <script src="{{url_for('static',filename='assets/libs/apexcharts/apexcharts.min.js')}}"></script>
+                <!-- Vector map-->
+                <script src="{{url_for('static',filename='assets/libs/jsvectormap/js/jsvectormap.min.js')}}"></script>
+                <script src="{{url_for('static',filename='assets/libs/jsvectormap/maps/world-merc.js')}}"></script>
+                <!--Swiper slider js-->
+                <script src="{{url_for('static',filename='assets/libs/swiper/swiper-bundle.min.js')}}"></script>
+                <!-- Dashboard init -->
+                <script src="{{url_for('static',filename='assets/js/pages/dashboard-ecommerce.init.js')}}"></script>
+                <!-- profile init js -->
+                <script src="{{url_for('static',filename='assets/js/pages/profile.init.js')}}"></script>
+                <!-- profile-setting init js -->
+                <script src="{{url_for('static',filename='assets/js/pages/profile-setting.init.js')}}"></script>
+                <!-- App js -->
+                <script src="{{url_for('static',filename='assets/js/app.js')}}"></script>
+
+                <script src="{{url_for('static',filename='assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
+                
+</body>
+
+</html>
