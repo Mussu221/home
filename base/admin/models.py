@@ -1,12 +1,10 @@
 from flask_login import UserMixin
 from base.database.db import db
 from datetime import datetime
-from base import login_manager
+from base  import login_manager
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import os 
 
-
-       
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -37,26 +35,45 @@ class Admin(db.Model, UserMixin):
             return None
         return Admin.query.get(user_id)
 
-class Terms(db.Model):
-    id = db.Column(db.Integer,primary_key=True)
-    content=db.Column(db.Text,nullable=True)
+class Content(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=True)
+    content = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.Date)
     updated_at = db.Column(db.DateTime, onupdate=datetime.utcnow())
 
     def as_dict(self):
         return{
             'id':self.id,
+            'title':self.title,
             'content':self.content
         }
 
-class Privacy(db.Model):
-    id = db.Column(db.Integer,primary_key=True)
-    content=db.Column(db.Text,nullable=True)
+
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    cat_name = db.Column(db.String(200), nullable=True)
+    cat_image = db.Column(db.String(200), nullable=True)
     created_at = db.Column(db.Date)
     updated_at = db.Column(db.DateTime, onupdate=datetime.utcnow())
-
     def as_dict(self):
         return{
             'id':self.id,
-            'content':self.content
+            'title':self.cat_name,
+            'image':self.cat_image
         }
+
+    
+
+class Language(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    language = db.Column(db.String(200), nullable=True)
+    created_at = db.Column(db.Date)
+    updated_at = db.Column(db.DateTime, onupdate=datetime.utcnow())
+    def as_dict(self):
+        return{
+            'id':self.id,
+            'title':self.language,
+        }
+
+    

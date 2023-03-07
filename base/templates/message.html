@@ -1,0 +1,14 @@
+{% extends "layout1.html" %}
+{% block content%}
+<div class="card">
+    <div class="card-body">
+        
+        <form method="POST">
+            <input type="text" name="title"  />
+            <textarea name="message"> </textarea>
+            <input type="submit" name="submit" class="btn btn-success" value="UPLOAD"/>
+        </form>
+    </div>
+</div>
+
+{% endblock content %}

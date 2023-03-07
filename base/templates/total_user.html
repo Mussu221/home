@@ -16,117 +16,117 @@
                 <tbody>
                     {% for user in users.items %}
                     <tr>
-                        
+
                         <td><a href="#" class="fw-semibold">{{user.id}}</a></td>
                         <td>
                             <div class="avatar-group">
                                 <div class="avatar-group-item">
-                                    <img width="100px" src="{{url_for('static',filename='profile_pic/'+user.image_name)}}" alt="" class="rounded-circle avatar-xxs">
+                                    <a class="image-popup" href="{{url_for('static',filename='profile_pic/' + user.image_name)}}" title="">
+
+                                    <img width="100px"
+                                        src="{{url_for('static',filename='profile_pic/' + user.image_name)}}" alt=""
+                                        class="rounded-circle avatar-xxs">
                                 </div>
                             </div>
                         </td>
                         <td><span>{{user.fullname}}</span></td>
                         <td>{{user.email}}</td>
-                        <td>   
+                        <td>
                             <button class="btn btn-outline-danger" data-bs-toggle="modal"
-                            data-bs-target="#blockModal{{user.id}}">{% if user.is_block == 0 %}BLOCK{% else %}UNBLOCK{% endif %}</button>
-                            
+                                data-bs-target="#blockModal{{user.id}}">{% if user.is_block == 0 %}BLOCK{% else
+                                %}UNBLOCK{% endif %}</button>
+
                         </td>
                     </tr>
-                    <div class="modal fade" id="blockModal{{user.id}}" tabindex="-1"
-                    aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h4>Are you Sure ?</h4>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close" id="btn-close"></button>
-                            </div>
-                            <form method="POST"
-                                action="{{url_for('admin_auth.block_user',user_id=user.id)}}">
-                               
-                                <div class="modal-body">
-                                    <div class="mt-2 text-center">
+                    <div class="modal fade" id="blockModal{{user.id}}" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4>Are you Sure ?</h4>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                        id="btn-close"></button>
+                                </div>
+                                <form method="POST" action="{{url_for('admin_auth.block_user',user_id=user.id)}}">
 
-                                        <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
-                                           
-                                            <p class="text-muted mx-4 mb-0">
-                                                Are you Sure You want to {% if user.is_block == 0 %}Block{% else %}Unblock{% endif %} {{user.username}} ?
-                                            </p>
+                                    <div class="modal-body">
+                                        <div class="mt-2 text-center">
+
+                                            <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
+
+                                                <p class="text-muted mx-4 mb-0">
+                                                    Are you Sure You want to {% if user.is_block == 0 %}Block{% else
+                                                    %}Unblock{% endif %} {{user.fullname}} ?
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
+                                            <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">
+                                                Close
+                                            </button>
+                                            <button type="submit" class="btn w-sm btn-danger" id="delete-record">
+                                                Yes, {% if user.is_block == 0 %}Block{% else %}Unblock{% endif %}!
+                                            </button>
                                         </div>
                                     </div>
-                                    <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-                                        <button type="button" class="btn w-sm btn-light"
-                                            data-bs-dismiss="modal">
-                                            Close
-                                        </button>
-                                        <button type="submit" class="btn w-sm btn-danger"
-                                            id="delete-record">
-                                            Yes, {% if user.is_block == 0 %}Block{% else %}Unblock{% endif %}!
-                                        </button>
-                                    </div>
-                                </div>
                             </div>
-                        </form>
+                            </form>
+                        </div>
                     </div>
-                </div>
                     {% endfor %}
                 </tbody>
             </table>
             <div class="d-flex justify-content-end">
                 <div class="pagination-wrap hstack gap-2">
 
-                        {% if users.page == 1 %}
-                        <a href="#"
-                            class="page-item pagination-prev disabled">
-                            Prev
-                        </a>
+                    {% if users.page == 1 %}
+                    <a href="#" class="page-item pagination-prev disabled">
+                        Prev
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('admin_view.total_users', page=users.prev_num) }}"
+                        class="page-item pagination-prev">
+                        Prev
+                    </a>
+                    {% endif %}
+
+                    <ul class="pagination listjs-pagination mb-0">
+
+                        {% for page_num in users.iter_pages(left_edge=1, right_edge=1, left_current=1,
+                        right_current=2) %}
+                        {% if page_num %}
+
+                        {% if users.page == page_num %}
+
+
+                        <li class="active"> <a class="page"
+                                href="{{ url_for('admin_view.total_users',page=page_num) }}">
+                                {{ page_num }}
+                            </a></li>
                         {% else %}
-                        <a href="{{ url_for('admin_view.total_users', page=users.prev_num) }}"
-                            class="page-item pagination-prev">
-                            Prev
-                        </a>
+                        <li><a class="page" href="{{ url_for('admin_view.total_users', page=page_num) }}">
+                                {{ page_num }}
+                            </a></li>
+                        {% endif %}
+                        {% else %}
+                        ...
                         {% endif %}
 
-                        <ul class="pagination listjs-pagination mb-0">
-
-                            {% for page_num in users.iter_pages(left_edge=1, right_edge=1, left_current=1,
-                            right_current=2) %}
-                            {% if page_num %}
-
-                            {% if users.page == page_num %}
-
-
-                            <li class="active"> <a class="page"
-                                    href="{{ url_for('admin_view.total_users',page=page_num) }}">
-                                    {{ page_num }}
-                                </a></li>
-                            {% else %}
-                            <li><a class="page"
-                                    href="{{ url_for('admin_view.total_users', page=page_num) }}">
-                                    {{ page_num }}
-                                </a></li>
-                            {% endif %}
-                            {% else %}
-                            ...
-                            {% endif %}
-
-
-                            {% endfor %}
-                        </ul>
-                        {% if users.page == users.pages %}
-                        <a href="#" class="page-item pagination-next disabled">Next</a>
-                        {%  else %}
-                        <a href="{{ url_for('admin_view.total_users', page=users.next_num) }}"
-                            class="page-item pagination-next">Next</a>
-                        {% endif %}
-                        <p class="text-right mt-3">
-                     Showing page {{ users.page }} of {{ users.pages }} &nbsp;&nbsp; </p>
-                    </div>
+                        {% endfor %}
+                    </ul>
+                    {% if users.page == users.pages %}
+                    <a href="#" class="page-item pagination-next disabled">Next</a>
+                    {% else %}
+                    <a href="{{ url_for('admin_view.total_users', page=users.next_num) }}"
+                        class="page-item pagination-next">Next</a>
+                    {% endif %}
+                    <p class="text-right mt-3">
+                        Showing page {{ users.page }} of {{ users.pages }} &nbsp;&nbsp; </p>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 

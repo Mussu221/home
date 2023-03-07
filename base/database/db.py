@@ -7,7 +7,7 @@ migrate = Migrate()
 def initialize_db(app):
     
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SQLALCHEMY_DATABASE_URI'] ='mysql+pymysql://root:root@localhost:3309/home_db?charset=utf8'
+    app.config['SQLALCHEMY_DATABASE_URI'] ='mysql+pymysql://root:@localhost:3306/home_db?charset=utf8'
     app.config['SQLALCHEMY_PRE_PING'] = True
 
     db.init_app(app)

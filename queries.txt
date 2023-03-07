@@ -1,0 +1,15 @@
+property detail = availability time
+
+filter 
+
+category
+
+timeshare
+
+price detail
+
+
+New Things added :
+
+category , category_id field in add property , host language in update user,
+ type of place and type of property in add property and edit property 

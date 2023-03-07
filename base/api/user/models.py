@@ -5,25 +5,30 @@ from base.database.db import db
 from werkzeug.security import  check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import datetime
-import enum 
 
 class User(db.Model):
-    id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
-    fullname = db.Column('fullname', db.String(100))
-    country_code = db.Column('country_code',db.String(100))
+    
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    fullname = db.Column(db.String(100))
+    country_code = db.Column(db.String(100))
     phone_no = db.Column(db.String(15))
-    email = db.Column('email', db.String(100))
-    password = db.Column('password', db.String(200))
-    image_name = db.Column('photo_name',db.String(100))
+    email = db.Column(db.String(100))
+    password = db.Column( db.String(200))
+    image_name = db.Column(db.String(100))
     is_block = db.Column(db.Boolean,default=False)
-    device_id = db.Column('device_id', db.String(200))
-    device_type = db.Column('device_type', db.String(50))
-    social_id = db.Column('social_id', db.String(200))
-    social_type = db.Column('social_type', db.String(50))
+    device_id = db.Column( db.String(200))
+    device_type = db.Column( db.String(50))
+    social_id = db.Column( db.String(200))
+    social_type = db.Column( db.String(50))
+    customer_id = db.Column( db.String(50))
+    account = db.Column( db.String(50))
+    account_verified = db.Column(db.Boolean,default=False)
+    properties = db.relationship('Property', backref='user', lazy=True)
+    reviews = db.relationship('Review', backref='user', lazy=True)
+    host_language = db.Column(db.String(100),default='english')
     created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow())
     
-
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
@@ -55,7 +60,8 @@ class User(db.Model):
                     'social_id':self.social_id,
                     'social_type':self.social_type,
                     'device_id':self.device_id,
-                    'device_type':self.device_type
+                    'device_type':self.device_type,
+                    'languages':self.host_language
             }
 
     def social_dict(self,token):
@@ -114,6 +120,7 @@ class Property(db.Model):
     address = db.Column(db.String(200))
     latitude = db.Column(db.String(200))
     longitude = db.Column(db.String(200))
+    type_of_property = db.Column(db.String(200))
     city = db.Column(db.String(200))
     state = db.Column(db.String(200))
     zipcode = db.Column(db.String(10))
@@ -125,7 +132,12 @@ class Property(db.Model):
     amenities = db.Column(db.String(200))
     house_rules = db.Column(db.String(200))
     price_per_night = db.Column(db.Integer)
+    type_of_place = db.Column(db.String(200))
+    has_booking = db.Column(db.Boolean,default=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id', ondelete='CASCADE', onupdate = 'CASCADE'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE', onupdate = 'CASCADE'))
+    bookings = db.relationship('Booking', backref='property', lazy=True)
+    images = db.relationship('Property_image', backref='iamges', lazy=True)
     created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow())
     ratings = db.relationship('Review', backref='ratings', lazy=True)
@@ -139,7 +151,7 @@ class Property(db.Model):
         for i in reviews :
             sum += i.rating
         if sum != 0 :
-            average = round((sum/len(reviews)),2)
+            average = round((sum/len(reviews)),1)
             
         return{
                     'id' : self.id,
@@ -158,6 +170,10 @@ class Property(db.Model):
                     'amenities':list(eval(self.amenities)),
                     'house_rules':list(eval(self.house_rules)),
                     'price_per_night':self.price_per_night,
+                    'category_id':self.category_id,
+                    'type_of_property':self.type_of_property,
+                    'type_of_place':self.type_of_place
+
             }
 
 
@@ -183,6 +199,7 @@ class Review(db.Model):
     rating = db.Column(db.Integer)
     review = db.Column(db.Text)
     property_id = db.Column(db.Integer, db.ForeignKey('property.id', ondelete='CASCADE', onupdate = 'CASCADE'))
+    booking_id = db.Column(db.Integer, db.ForeignKey('booking.id', ondelete='CASCADE', onupdate = 'CASCADE'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE', onupdate = 'CASCADE'))
     created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow())
@@ -216,16 +233,9 @@ class Wishlist(db.Model):
             "property_id" : self.property_id,
         }
 
-class Status(str,enum.Enum):
-    pending       = 0  #pending payment 
-    upcoming      = 1
-    active        = 2
-    completed     = 3
-
 
 class Booking(db.Model):
 
-    
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     start_date = db.Column(db.DateTime)
     guests = db.Column(db.String(100))
@@ -235,12 +245,13 @@ class Booking(db.Model):
     service_fees = db.Column(db.Integer)
     total_charge = db.Column(db.Integer)
     description = db.Column(db.Text)
-    status = db.Column(db.Enum(Status))
+    status = db.Column(db.String(100))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE', onupdate = 'CASCADE'))
     property_id = db.Column(db.Integer, db.ForeignKey('property.id', ondelete='CASCADE', onupdate = 'CASCADE'))
+    created_at = db.Column(db.DateTime)
+    updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow())
 
     def as_dict(self):
-
 
         return{
             "id":self.id,
@@ -255,4 +266,36 @@ class Booking(db.Model):
             "description":self.description,
             "user_id":self.user_id,
             "property_id" : self.property_id,
+        }
+
+class Visits(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    Visits = db.Column(db.Integer)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE', onupdate = 'CASCADE'))
+    property_id = db.Column(db.Integer, db.ForeignKey('property.id', ondelete='CASCADE', onupdate = 'CASCADE'))
+    created_at = db.Column(db.DateTime)
+    updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow())
+
+
+class PaymentInfo(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    customer = db.Column(db.String(100))
+    recipient = db.Column(db.String(100))
+    customer_id = db.Column(db.String(100))
+    recepient_acc_id = db.Column(db.String(100))
+    intent_id = db.Column(db.String(100))
+    intent_secret = db.Column(db.String(100))
+    amount = db.Column(db.Integer)
+    booking_id =  db.Column(db.Integer, db.ForeignKey('booking.id', ondelete='CASCADE', onupdate = 'CASCADE'))
+    created_at = db.Column(db.DateTime)
+    updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow())
+
+    def as_dict(self):
+        return{
+            "id":self.id,
+            "customer_id":self.customer_id,
+            "recepient_acc_id":self.recepient_acc_id,
+            "intent_id" : self.intent_id,
+            "intent_secret" : self.intent_secret,
+            "amount":self.amount
         }

@@ -6,7 +6,7 @@
 <div class="profile-foreground position-relative mx-n4 mt-n4">
   <div class="profile-wid-bg">
     <img
-      src="{{url_for('static',filename='assets/images/profile-bg.jpg')}}"
+      src="{{url_for('static',filename='assets/images/profile-bg.jpeg')}}"
       alt=""
       class="profile-wid-img"/>
   </div>
@@ -86,5 +86,7 @@
   </div>
 </div>
 </div>
-
+{% block javascript %}
+<script src="{{url_for('static',filename='assets/js/pages/profile.init.js')}}"></script>
+{% endblock javascript%}
 {% endblock %}

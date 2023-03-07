@@ -9,7 +9,7 @@ from base.api.user.models import User , token_required
 from base.api.user.utils import send_reset_email 
 from werkzeug.utils import secure_filename
 import secrets
-
+import stripe
 
 
 
@@ -37,6 +37,7 @@ def register():
 
         user=validate(email)
         user_phone = User.query.filter_by(phone_no=phone_no).first()
+
         if fullname==None or phone_no==None or password==None or email==None or country_code==None or image_name==None :
             return jsonify({'status': 0, 'messege': 'Every field must have values'})
 
@@ -47,29 +48,19 @@ def register():
             return jsonify(   {'status': 0, 'message': 'mobile number is already taken'})
 
         elif not user:
-            user_data = User(fullname=fullname,country_code=country_code, email=email, device_id=device_id, device_type=device_type, phone_no=phone_no, password=hash_password,image_name=image_name, created_at=datetime.utcnow())
+
+            # stripe.api_key = 'rk_test_51MedQAFCatXUefOh70jO1tvPRvxLq8jtLERcCFM0T44RDECnXSexr7b3eC0BKdd3mNe9EllVf0VyNGwLpLkxYYDn00NRIPPShw'
+
+            customer = stripe.Customer.create(email=email,
+                                                       name=fullname,payment_method='pm_card_visa')
+
+
+            user_data = User(fullname=fullname,country_code=country_code, email=email, device_id=device_id, device_type=device_type, phone_no=phone_no, password=hash_password,image_name=image_name, customer_id=customer.id, created_at=datetime.utcnow())
             insert_data(user_data)
             token = jwt.encode({'id': user_data.id, 'exp': datetime.utcnow() + timedelta(days = 365)},
                              os.getenv('SECRET_KEY'))
             # welcome_mail(user_data)
             return jsonify({'status': 1, 'message': 'success', 'data': user_data.as_dict(token)})
-
-
-# otp_store ={}
-
-
-# @user_auth.route('/verify_otp', methods=['GET'])
-# def verify_otp():
-#     user_phone = request.args.get('phone')
-#     user_otp = request.args.get('otp')
-
-#     # Check if the OTP entered by the user matches the one stored in the dictionary
-#     if user_phone in otp_store and otp_store[user_phone] == user_otp:
-#         return "OTP verified successfully!"
-#     else:
-#         return "Invalid OTP!"
-
-
 
 
 
@@ -99,17 +90,22 @@ def social_register():
 
         if not user:
 
+            customer = stripe.Customer.create(email=email,
+                                                       name=fullname,payment_method='pm_card_visa')
+
             user_data = User(social_id=social_id,
                                 email= email,
                                 fullname=fullname,
                                 image_name=profile_pic,
                                 social_type=social_type,
+                                customer_id=customer,
                                 device_id=device_id,
                                 device_type=device_type,
                                 created_at=datetime.utcnow())
 
             insert_data(user_data)
-
+            
+            
             token = jwt.encode({'id': user_data.id, 'exp': datetime.utcnow() + timedelta(days = 365)}, os.getenv('SECRET_KEY'))
 
         return jsonify({'status': 1, 'message':'Register Successful','data': user_data.as_dict(token) })
@@ -123,7 +119,7 @@ def user_login():
         password = request.form.get('password')
         user = validate(email)
         if not user:
-            return {'status': 0, 'message': 'User Not Exits'}
+            return {'status': 0, 'message': 'User doesn\'t exist !'}
         if user and user.check_password(password) and user.is_block==0:
 
             token = jwt.encode({'id': user.id, 'exp': datetime.utcnow() + timedelta(days=365)}, os.getenv('SECRET_KEY'))
@@ -235,28 +231,36 @@ def user_update(active_user):
         elif  user and user.email!=active_user.email:
             return jsonify(   {'status': 0, 'message': 'email is already taken'})
 
-        elif  user and user.phone!=active_user.phone:
+        elif  user and user.phone_no!=active_user.phone_no:
             return jsonify(   {'status': 0, 'message': 'mobile number is already taken'})
 
         elif active_user and active_user.is_block==0:
-                if request.files :
-                    form_picture = request.files.get('image')
+                form_picture = request.files.get('image')
+                image_name = secure_filename(form_picture.filename)
+                if image_name != "":
                     if active_user.image_name != 'default.png':
                         os.remove(os.path.join(UPLOAD_FOLDER,  active_user.image_name))
-                    image_name = secure_filename(form_picture.filename)
                     extension = os.path.splitext(image_name)[1]
                     x = secrets.token_hex(10)
                     picture_fn = x + extension
-                    print(picture_fn)
                     form_picture.save(os.path.join(UPLOAD_FOLDER, picture_fn))
                     active_user.image_name = picture_fn
 
-
+                active_user.host_language = request.form.getlist('language')
                 active_user.fullname = request.form.get('fullname')
                 active_user.country_code = request.form.get('country_code')
                 active_user.email = request.form.get('email')
                 active_user.phone_no = request.form.get('phone_no')
-
                 db.session.commit()
 
                 return jsonify({'status': 1, 'message': 'Sucessfully Updated Profile', 'data': active_user.user_data()})
+
+
+@user_auth.route('/verify_payment_account', methods=['GET','POST'])
+def verify_payment_account():
+
+    account = stripe.Account.retrieve('acct_1MeeFrFM58KbZ06k')
+    if (account.charges_enabled == False and account.details_submitted == False and account.payouts_enabled == False and account.requirements.disabled_reason != None):
+
+        create_link = stripe.AccountLink.create(account=account.id,refresh_url="https://example.com/reauth",return_url="https://example.com/return",type="account_onboarding",)
+        return jsonify({'status': 1, 'data':create_link})

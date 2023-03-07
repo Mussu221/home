@@ -1,0 +1,23 @@
+{% extends "layout1.html" %}
+{% block content%}
+<div class="card">
+    <div class="card-body">
+        <script
+            src="{{url_for('static', filename='assets/ckeditor/ckeditor.js')}}"></script>
+        <form method="POST">
+            <div class="form-group">
+                <label class="form-label"><h3> Review Process</h3> </label>
+                    <textarea  name="content" id="editor" rows="9" cols="20"
+                        class="form-control">{{content.content}}</textarea>
+                <br>
+                <input type="submit" name="submit" class="btn btn-success" value="UPLOAD"/>
+                <a href="{{url_for('admin_view.display_review_process')}}" class="btn btn-success">
+                    <i class="ri-eye-line"></i>
+                    VIEW 
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+<script>CKEDITOR.replace('content')</script>
+{% endblock content %}

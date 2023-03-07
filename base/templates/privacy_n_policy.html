@@ -3,7 +3,7 @@
 <div class="card">
     <div class="card-body">
         <script
-            src="{{url_for('static',filename='assets/ckeditor/ckeditor.js')}}"></script>
+            src="{{url_for('static', filename='assets/ckeditor/ckeditor.js')}}"></script>
         <form method="POST" action="{{url_for('admin_auth.privacy_policy')}}">
 
             <div class="form-group">
@@ -13,7 +13,10 @@
                 <br>
                 <input type="submit" name="submit" class="btn btn-success"
                     value="UPLOAD"/>
-
+                <a href="{{url_for('admin_view.display_privacy')}}" class="btn btn-success">
+                    <i class="ri-eye-line"></i>
+                    VIEW 
+                </a>
             </form>
         </div>
     </div>

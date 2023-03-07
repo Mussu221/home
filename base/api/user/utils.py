@@ -45,9 +45,9 @@ def send_reset_email(user):
 
     SERVER = 'smtp.gmail.com'  # smtp server
     PORT = 587  # mail port number
-    FROM = 'musharrafmansuri567@gmail.com'  # sender Mail
+    FROM = 'testing22032003@gmail.com'  # sender Mail
     TO = user.email  # receiver mail
-    PASS = 'fflzuijiotzbkjcf'  # Sender Mail Password
+    PASS = 'pivwhdvodhyzpgmx'  # Sender Mail Password
 
     msg = MIMEMultipart()
     content = f'''<div class="content-wrap" style="font-family: 'Roboto', sans-serif; box-sizing: border-box; color: #495057; font-size: 14px; vertical-align: top; margin: 0;padding: 30px; box-shadow: 0 3px 15px rgba(30,32,37,.06); ;border-radius: 7px; background-color: #fff;" valign="top">
@@ -103,9 +103,9 @@ def welcome_mail(user):
 
     SERVER = 'smtp.gmail.com'  # smtp server
     PORT = 587  # mail port number
-    FROM = 'musharrafmansuri567@gmail.com'  # sender Mail
+    FROM ='testing22032003@gmail.com' 
     TO = user.email  # receiver mail
-    PASS = 'fflzuijiotzbkjcf'  # Sender Mail Password
+    PASS = 'pivwhdvodhyzpgmx'  # Sender Mail Password
 
     msg = MIMEMultipart()
 

@@ -51,7 +51,7 @@
     --vz-vertical-menu-sub-item-color-dark: #abb9e8;
     --vz-vertical-menu-sub-item-hover-color-dark: #fff;
     --vz-vertical-menu-sub-item-active-color-dark: #fff;
-    --vz-vertical-menu-title-color-dark: #838fb9;
+    --vz-vertical-menu-title-color-dark: #ffffff;
     --vz-header-bg: #fff;
     --vz-header-item-color: #e9ecef;
     --vz-header-bg-dark: #405189;
@@ -5622,7 +5622,7 @@ strong {
 }
 
 .bg-soft-success {
-    background-color: rgba(10, 179, 156, 0.18) !important;
+    background-color: #9C04F5 !important;
 }
 
 .bg-soft-info {
@@ -6472,7 +6472,7 @@ button {
 .btn-outline-success.btn-border,
 .btn-soft-success.btn-border,
 .btn-success.btn-border {
-    border-bottom: 2px solid #088c7a;
+    border-bottom: 2px solid #1A181D;
 }
 
 .btn-info.btn-border,
@@ -11351,8 +11351,8 @@ button.gridjs-sort-desc {
 
 .listjs-pagination li.active .page {
     color: #fff;
-    background-color: #405189;
-    border-color: #405189;
+    background-color: #9C04F5;
+    border-color: #8003c9;
 }
 
 .pagination-wrap {
@@ -14125,14 +14125,14 @@ span.flatpickr-weekday {
 }
 
 .auth-one-bg {
-    background-image: url(../images/auth-one-bg.jpg);
+    background-image: url(../images/auth-one-bg.jpeg);
     background-position: center;
     background-size: cover;
 }
 
 .auth-one-bg .bg-overlay {
-    background: linear-gradient( 3deg, #FEE24C 2%, #9C04F5 40%);
-    opacity: 0.9;
+    background: rgba(156,4,245,1);
+    opacity: 0.7;
 }
 
 .auth-one-bg .shape {
@@ -15118,10 +15118,10 @@ span.flatpickr-weekday {
     right: 0;
     top: 0;
     bottom: 0;
-    opacity: 0.9;
+    opacity: 0.7;
     background: #405189;
     background: -webkit-gradient( linear, left bottom, left top, from(#171e32), to(#405189));
-    background: linear-gradient(to top, #171e32, #405189);
+    background: linear-gradient(to top, #171e32, #9C04F5);
 }
 
 .profile-wid-bg .profile-wid-img {
@@ -15210,6 +15210,13 @@ span.flatpickr-weekday {
     position: absolute;
     right: 0;
     left: auto;
+    bottom: 0;
+    cursor: pointer;
+}
+.profile-user .profile-photo-edit1 {
+    position: absolute;
+    right: 0;
+    left: -0.4rem;
     bottom: 0;
     cursor: pointer;
 }

@@ -118,7 +118,7 @@
                                                      -->
                                             <div class="col-lg-12">
                                                 <div class="hstack gap-2 justify-content-end">
-                                                    <button type="submit" class="btn btn-success btn-border">Updates</button>
+                                                    <button type="submit" class="btn btn-success btn-border">Update</button>
                                                     <a type="button" href="{{url_for('admin_auth.user_profile')}}" >Cancel</a>
                                                 </div>
                                             </div>
@@ -185,5 +185,7 @@
                     </div>
             </div>
         </div>
-
-                        {% endblock %}
+        {% block javascript %}
+        <script src="{{url_for('static',filename='assets/js/pages/profile-setting.init.js')}}"></script>
+        {% endblock javascript%}
+{% endblock content%}
